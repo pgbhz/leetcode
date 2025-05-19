@@ -1,4 +1,8 @@
 # Definition for a binary tree node.
+from collections import deque
+from typing import List, Optional
+
+
 class TreeNode:
     def __init__(self, val=0, left=None, right=None):
         self.val = val
@@ -9,22 +13,16 @@ class TreeNode:
 class Solution:
     def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
         queue = deque([(0, root)])
-        levels = {}
+        levels = []
 
         # tree -> no cycles brother
-        while len(queue) > 0:
-            level, curr = queue.pop()
+        while queue:
+            level, curr = queue.popleft()
             if curr is not None:
-                if level not in levels:
-                    levels[level] = [curr.val]
-                else:
-                    levels[level].append(curr.val)
-                queue.appendleft((level + 1, curr.left))
-                queue.appendleft((level + 1, curr.right))
+                if len(levels) == level:
+                    levels.append([])
+                levels[level].append(curr.val)
+                queue.append((level + 1, curr.left))
+                queue.append((level + 1, curr.right))
 
-        # extract values in increasing order of keys
-        traversal = []
-        for level in sorted(levels.keys()):
-            traversal.append(levels[level])
-
-        return traversal
+        return levels
