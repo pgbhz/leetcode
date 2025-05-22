@@ -7,43 +7,43 @@ class TreeNode:
 
 
 """
-We want average of levels in Binary Tree.
-[avg1, avg2, ....]
+Average of levels in Binary Tree.
+Returns [avg1, avg2, ...] where each avg is the average of all node values at that level.
 
-How can we get all the values of level in Binary Tree?
-Well, in general, we can use something like a map to index every node by its level.
-And then, we go through every node in that key and take the average.
-Can we make it simpler? Can we be more efficient? I'm not sure.
+This solution uses a standard level-order traversal (BFS) approach to process the tree
+level by level, calculating averages as we go.
 """
 
 
-from collections import defaultdict, deque
+from collections import deque
 from typing import List, Optional
 
 
 class Solution:
     def averageOfLevels(self, root: Optional[TreeNode]) -> List[float]:
-        levels = defaultdict(list)
-        enqueued = set([root])
-        queue = deque([(root, 0)])
+        if not root:
+            return []
 
+        result = []
+        queue = deque([root])
+
+        # Level order traversal
         while queue:
-            node, level = queue.popleft()
-            levels[level].append(node.val)
+            level_size = len(queue)
+            level_sum = 0
 
-            if node.left and node.left not in enqueued:
-                enqueued.add(node.left)
-                queue.append((node.left, level + 1))
+            # Process all nodes at current level
+            for _ in range(level_size):
+                node = queue.popleft()
+                level_sum += node.val
 
-            if node.right and node.right not in enqueued:
-                enqueued.add(node.right)
-                queue.append((node.right, level + 1))
+                # Add children to queue
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
 
-        avg_levels = []
-        for level in sorted(levels.keys()):
-            avg = 0
-            for val in levels[level]:
-                avg += val
-            avg /= len(levels[level])
-            avg_levels.append(avg)
-        return avg_levels
+            # Calculate average for current level
+            result.append(level_sum / level_size)
+
+        return result
