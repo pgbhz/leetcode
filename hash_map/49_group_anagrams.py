@@ -26,3 +26,21 @@ class Solution:
             grouped_anagrams.append(category)
 
         return grouped_anagrams
+
+
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        anagrams = defaultdict(list)
+        for word in strs:
+            exploded_word = list(word)
+            sorted_word = ""
+            for c in sorted(exploded_word):
+                sorted_word += c
+
+            anagrams[sorted_word].append(word)
+
+        grouped_anagrams = []
+        for category in anagrams.values():
+            grouped_anagrams.append(category)
+
+        return grouped_anagrams
