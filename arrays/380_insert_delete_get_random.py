@@ -13,6 +13,8 @@ we swap the key with the last element of the list, but how do we find the key qu
 we need to keep track of the keys...
 """
 
+from random import randint
+
 
 class RandomizedSet:
 
