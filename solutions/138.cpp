@@ -38,42 +38,106 @@ public:
 };
 */
 
+// class Solution {
+// public:
+//     Node* copyRandomList(Node* head) {
+//         std::unordered_map<Node*, Node*> copies;
+//         std::unordered_map<int, Node*> idx_to_original_node;
+//         Node* curr = head;
+//         int idx = 0;
+//         while (curr != nullptr) { // is this the best way to iterate?
+//             copies[curr] = new Node(curr->val); // create deepcopy
+//             idx_to_original_node[idx] = curr;   // index original node
+//             curr = curr->next;                  // move forward
+//             idx += 1;                           // increase idx
+//         } // at this point we have stored every ref and created every copy, now
+//           // we update the pointers
+//         idx_to_original_node[idx] = nullptr;
+
+//         int list_size = idx + 1;
+//         curr = copies[head];
+//         idx = 0;
+//         while (curr != nullptr) {
+//             if (idx + 1 == list_size) {
+//                 curr->next == nullptr;
+//             } else {
+//                 Node* original_next_node = idx_to_original_node[idx + 1];
+//                 Node* copied_next_node = copies[original_next_node];
+//                 curr->next = copied_next_node;
+//             }
+
+//             Node* original_node = idx_to_original_node[idx];
+//             Node* original_node_random = original_node->random;
+//             Node* copied_node_random = copies[original_node_random];
+//             curr->random = copied_node_random;
+
+//             curr = curr->next;
+//             idx += 1;
+//         }
+//         return copies[idx_to_original_node[0]];
+//     }
+// };
+
+// very nice and clean recursive approach.
+// class Solution {
+// private:
+//     std::unordered_map<Node*, Node*> copies;
+
+// public:
+//     Node* copyRandomList(Node* head) {
+//         if (head == nullptr) {
+//             return head;
+//         }
+        
+//         if (this->copies.find(head) != this->copies.end()) {
+//             return this->copies[head];
+//         }
+
+//         Node* node = new Node(head->val);
+//         this->copies[head] = node;
+
+//         node->next = this->copyRandomList(head->next);
+//         node->random = this->copyRandomList(head->random);
+//         return node;
+//     }
+// };
+
+// interweaving, very elegant
 class Solution {
 public:
     Node* copyRandomList(Node* head) {
-        std::unordered_map<Node*, Node*> copies;
-        std::unordered_map<int, Node*> idx_to_original_node;
-        Node* curr = head;
-        int idx = 0;
-        while (curr != nullptr) { // is this the best way to iterate?
-            copies[curr] = new Node(curr->val); // create deepcopy
-            idx_to_original_node[idx] = curr;   // index original node
-            curr = curr->next;                  // move forward
-            idx += 1;                           // increase idx
-        } // at this point we have stored every ref and created every copy, now
-          // we update the pointers
-        idx_to_original_node[idx] = nullptr;
-
-        int list_size = idx + 1;
-        curr = copies[head];
-        idx = 0;
-        while (curr != nullptr) {
-            if (idx + 1 == list_size) {
-                curr->next == nullptr;
-            } else {
-                Node* original_next_node = idx_to_original_node[idx + 1];
-                Node* copied_next_node = copies[original_next_node];
-                curr->next = copied_next_node;
-            }
-
-            Node* original_node = idx_to_original_node[idx];
-            Node* original_node_random = original_node->random;
-            Node* copied_node_random = copies[original_node_random];
-            curr->random = copied_node_random;
-
-            curr = curr->next;
-            idx += 1;
+        if (head == nullptr) {
+            return head;
         }
-        return copies[idx_to_original_node[0]];
+
+        Node* curr = head;
+        while (curr != nullptr) {
+            Node* clone = new Node(curr->val);
+            clone->next = curr->next;
+            curr->next = clone;
+            curr = clone->next;
+        }
+        curr = head;
+        while (curr != nullptr) {
+            if (curr->random != nullptr) {
+                curr->next->random = curr->random->next;    // i don't understand this
+            } else {
+                curr->next->random = nullptr;
+            }
+            curr = curr->next->next;
+        }
+
+        Node* curr_old = head;                              // i also don't understand this very well
+        Node* curr_new = head->next;
+        Node* head_old = head->next;
+        while (curr_old != nullptr) {
+            curr_old->next = curr_old->next->next;
+            if (curr_new->next != nullptr) {
+                curr_new->next = curr_new->next->next;
+            } 
+            curr_old = curr_old->next;
+            curr_new = curr_new->next;
+        }
+        return head_old;        
     }
 };
